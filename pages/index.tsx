@@ -1,10 +1,9 @@
-import { GetServerSideProps } from "next"
-import { useEffect, useState } from "react"
+import { GetStaticProps } from "next"
 
-export default function Home({ repositories }) {
+export default function Home({ repositories, date }) {
   return (
     <>
-      <h2>Repositórios</h2>
+      <h2>Repositórios - {date}</h2>
 
       <ul>
         {repositories.map(repo => (
@@ -15,7 +14,7 @@ export default function Home({ repositories }) {
   )
 }
 
-export const getServerSideProps: GetServerSideProps = async () => {
+export const getStaticProps: GetStaticProps = async () => {
   const response = await fetch('https://api.github.com/users/azanniel/repos')
 
   const data = await response.json()
@@ -23,7 +22,9 @@ export const getServerSideProps: GetServerSideProps = async () => {
 
   return {
     props: {
-      repositories: repositoryNames
-    }
+      repositories: repositoryNames,
+      date: new Date().toISOString()
+    },
+    revalidate: 5 // 5 seconds
   }
 }
